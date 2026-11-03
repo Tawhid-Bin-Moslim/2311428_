@@ -57,6 +57,12 @@ export default function App() {
   const actionMenuRef = useRef<HTMLDivElement>(null)
   const actionButtonRef = useRef<HTMLButtonElement>(null)
 
+  // View request details state
+  const [selectedRequest, setSelectedRequest] =
+    useState<MaintenanceRequest | null>(null)
+  const [detailsLoading, setDetailsLoading] = useState(false)
+  const [detailsError, setDetailsError] = useState("")
+
   // New request form state
   const [showForm, setShowForm] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -69,7 +75,7 @@ export default function App() {
     priority: "medium",
   })
 
-  // Fetch maintenance requests
+  // Fetch all maintenance requests
   useEffect(() => {
     async function fetchRequests() {
       try {
@@ -232,7 +238,7 @@ export default function App() {
     const rect = button.getBoundingClientRect()
 
     const menuWidth = 190
-    const menuHeight = 220
+    const menuHeight = 260
     const spacing = 8
 
     const spaceBelow = window.innerHeight - rect.bottom
@@ -255,6 +261,39 @@ export default function App() {
     actionButtonRef.current = button
     setMenuPosition({ top, left })
     setOpenMenuId(requestId)
+  }
+
+  // Fetch a single maintenance request
+  async function handleViewDetails(requestId: number) {
+    setOpenMenuId(null)
+    setMenuPosition(null)
+
+    setSelectedRequest(null)
+    setDetailsError("")
+    setDetailsLoading(true)
+
+    try {
+      const response = await fetch(
+        `/api/maintenance-requests/${requestId}`
+      )
+
+      if (!response.ok) {
+        throw new Error(
+          response.status === 404
+            ? "Maintenance request not found"
+            : "Failed to fetch maintenance request details"
+        )
+      }
+
+      const data: MaintenanceRequest = await response.json()
+      setSelectedRequest(data)
+    } catch (err) {
+      setDetailsError(
+        err instanceof Error ? err.message : "Something went wrong"
+      )
+    } finally {
+      setDetailsLoading(false)
+    }
   }
 
   // Update maintenance request status
@@ -289,6 +328,10 @@ export default function App() {
           request.id === requestId ? updatedRequest : request
         )
       )
+
+      if (selectedRequest?.id === requestId) {
+        setSelectedRequest(updatedRequest)
+      }
     } catch (err) {
       setActionError(
         err instanceof Error ? err.message : "Something went wrong"
@@ -323,6 +366,10 @@ export default function App() {
       setRequests((previousRequests) =>
         previousRequests.filter((request) => request.id !== requestId)
       )
+
+      if (selectedRequest?.id === requestId) {
+        setSelectedRequest(null)
+      }
     } catch (err) {
       setActionError(
         err instanceof Error ? err.message : "Something went wrong"
@@ -571,6 +618,121 @@ export default function App() {
             </div>
           )}
 
+          {/* View Maintenance Request Details Modal */}
+          {(detailsLoading || detailsError || selectedRequest) && (
+            <div
+              className="modal-overlay"
+              onMouseDown={(e) => {
+                if (e.target === e.currentTarget && !detailsLoading) {
+                  setSelectedRequest(null)
+                  setDetailsError("")
+                }
+              }}
+            >
+              <div
+                className="modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="details-modal-title"
+              >
+                <div className="modal-header">
+                  <div>
+                    <h2 id="details-modal-title">Request Details</h2>
+                    <p>
+                      Complete maintenance request information.
+                    </p>
+                  </div>
+
+                  <button
+                    className="icon-button"
+                    type="button"
+                    disabled={detailsLoading}
+                    onClick={() => {
+                      setSelectedRequest(null)
+                      setDetailsError("")
+                    }}
+                    aria-label="Close details"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {detailsLoading ? (
+                  <p>Loading request details...</p>
+                ) : detailsError ? (
+                  <p className="form-error" role="alert">
+                    {detailsError}
+                  </p>
+                ) : selectedRequest ? (
+                  <div className="request-details">
+                    <div className="form-group">
+                      <label>Request ID</label>
+                      <p>#{selectedRequest.id}</p>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Title</label>
+                      <p>{selectedRequest.title}</p>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Description</label>
+                      <p>{selectedRequest.description}</p>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Location</label>
+                      <p>{selectedRequest.location}</p>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Priority</label>
+                      <p>
+                        {selectedRequest.priority.charAt(0).toUpperCase() +
+                          selectedRequest.priority.slice(1)}
+                      </p>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Status</label>
+                      <p>
+                        {selectedRequest.status === "in_progress"
+                          ? "In Progress"
+                          : selectedRequest.status.charAt(0).toUpperCase() +
+                            selectedRequest.status.slice(1)}
+                      </p>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Created At</label>
+                      <p>
+                        {selectedRequest.created_at
+                          ? new Date(
+                              selectedRequest.created_at
+                            ).toLocaleString()
+                          : "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="cancel-button"
+                    disabled={detailsLoading}
+                    onClick={() => {
+                      setSelectedRequest(null)
+                      setDetailsError("")
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Statistics */}
           <div className="stats-grid">
             <div className="stat-card">
@@ -754,6 +916,15 @@ export default function App() {
               left: menuPosition.left,
             }}
           >
+            <button
+              type="button"
+              onClick={() => handleViewDetails(openMenuId)}
+            >
+              View Details
+            </button>
+
+            <div className="action-menu-divider" />
+
             <p>Change Status</p>
 
             {(
