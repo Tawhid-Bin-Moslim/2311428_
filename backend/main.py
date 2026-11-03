@@ -2,12 +2,22 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import Literal
-
+import os
+from fastapi.middleware.cors import CORSMiddleware
 from database import get_connection
 
 
 app = FastAPI(title="Apartment Management System")
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        os.getenv("FRONTEND_URL", ""),
+    ],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ==========================================
 # HEALTH CHECK
