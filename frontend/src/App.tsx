@@ -25,6 +25,8 @@ import {
   User,
 } from "lucide-react"
 
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? ""
+
 type RequestStatus = "pending" | "in_progress" | "completed"
 
 interface MaintenanceRequest {
@@ -79,7 +81,9 @@ export default function App() {
   useEffect(() => {
     async function fetchRequests() {
       try {
-        const response = await fetch("/api/maintenance-requests")
+        const response = await fetch(
+          `${API_BASE_URL}/api/maintenance-requests`
+        )
 
         if (!response.ok) {
           throw new Error("Failed to fetch maintenance requests")
@@ -188,13 +192,16 @@ export default function App() {
     setFormError("")
 
     try {
-      const response = await fetch("/api/maintenance-requests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
+      const response = await fetch(
+        `${API_BASE_URL}/api/maintenance-requests`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      )
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -274,7 +281,7 @@ export default function App() {
 
     try {
       const response = await fetch(
-        `/api/maintenance-requests/${requestId}`
+        `${API_BASE_URL}/api/maintenance-requests/${requestId}`
       )
 
       if (!response.ok) {
@@ -307,7 +314,7 @@ export default function App() {
 
     try {
       const response = await fetch(
-        `/api/maintenance-requests/${requestId}`,
+        `${API_BASE_URL}/api/maintenance-requests/${requestId}`,
         {
           method: "PUT",
           headers: {
@@ -353,7 +360,7 @@ export default function App() {
 
     try {
       const response = await fetch(
-        `/api/maintenance-requests/${requestId}`,
+        `${API_BASE_URL}/api/maintenance-requests/${requestId}`,
         {
           method: "DELETE",
         }
