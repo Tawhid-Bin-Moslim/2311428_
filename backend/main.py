@@ -3,9 +3,9 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from routers.users import router as users_router
 from routers.maintenance import router as maintenance_router
-
+from routers.auth import router as auth_router
 
 app = FastAPI(
     title="Apartment Management System",
@@ -32,7 +32,7 @@ app.add_middleware(
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
-
-
 # Register Maintenance Router
 app.include_router(maintenance_router)
+app.include_router(auth_router)
+app.include_router(users_router)

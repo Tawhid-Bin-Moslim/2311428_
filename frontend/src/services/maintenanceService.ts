@@ -1,7 +1,6 @@
 
+import { apiFetch } from "./api";
 import type { MaintenanceRequest } from "../types/maintenance";
-
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
 
 export interface CreateMaintenanceRequest {
   title: string;
@@ -10,11 +9,9 @@ export interface CreateMaintenanceRequest {
   priority: "low" | "medium" | "high";
 }
 
-// GET: Fetch all maintenance requests
+// GET: Fetch maintenance requests visible to the logged-in user.
 export async function getMaintenanceRequests(): Promise<MaintenanceRequest[]> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/maintenance-requests`
-  );
+  const response = await apiFetch("/api/maintenance-requests");
 
   if (!response.ok) {
     throw new Error("Failed to fetch maintenance requests");
@@ -23,20 +20,17 @@ export async function getMaintenanceRequests(): Promise<MaintenanceRequest[]> {
   return response.json();
 }
 
-// POST: Create a maintenance request
+// POST: Resident creates a maintenance request.
 export async function createMaintenanceRequest(
   formData: CreateMaintenanceRequest
 ): Promise<MaintenanceRequest> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/maintenance-requests`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    }
-  );
+  const response = await apiFetch("/api/maintenance-requests", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -51,12 +45,12 @@ export async function createMaintenanceRequest(
   return response.json();
 }
 
-// GET: Fetch one maintenance request
+// GET: Fetch one maintenance request.
 export async function getMaintenanceRequest(
   requestId: number
 ): Promise<MaintenanceRequest> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/maintenance-requests/${requestId}`
+  const response = await apiFetch(
+    `/api/maintenance-requests/${requestId}`
   );
 
   if (!response.ok) {
@@ -70,13 +64,13 @@ export async function getMaintenanceRequest(
   return response.json();
 }
 
-// PUT: Update maintenance request status
+// PUT: Building Manager updates maintenance request status.
 export async function updateMaintenanceRequest(
   requestId: number,
   newStatus: MaintenanceRequest["status"]
 ): Promise<MaintenanceRequest> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/maintenance-requests/${requestId}`,
+  const response = await apiFetch(
+    `/api/maintenance-requests/${requestId}`,
     {
       method: "PUT",
       headers: {
@@ -93,12 +87,12 @@ export async function updateMaintenanceRequest(
   return response.json();
 }
 
-// DELETE: Delete a maintenance request
+// DELETE: Admin deletes a maintenance request.
 export async function deleteMaintenanceRequest(
   requestId: number
 ): Promise<void> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/maintenance-requests/${requestId}`,
+  const response = await apiFetch(
+    `/api/maintenance-requests/${requestId}`,
     {
       method: "DELETE",
     }

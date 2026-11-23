@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from schemas.maintenance import (
     MaintenanceRequestCreate,
@@ -12,6 +12,8 @@ from services.maintenance import (
     update_maintenance_request,
     delete_maintenance_request,
 )
+from dependencies import get_current_user
+
 
 router = APIRouter(
     prefix="/api/maintenance-requests",
@@ -20,28 +22,40 @@ router = APIRouter(
 
 
 @router.post("", status_code=201)
-def create_request(request: MaintenanceRequestCreate):
-    return create_maintenance_request(request)
+def create_request(
+    request: MaintenanceRequestCreate,
+    current_user: dict = Depends(get_current_user),
+):
+    return create_maintenance_request(request, current_user)
 
 
 @router.get("/{request_id}")
-def get_request(request_id: int):
-    return get_maintenance_request(request_id)
+def get_request(
+    request_id: int,
+    current_user: dict = Depends(get_current_user),
+):
+    return get_maintenance_request(request_id, current_user)
 
 
 @router.get("")
-def list_requests():
-    return list_maintenance_requests()
+def list_requests(
+    current_user: dict = Depends(get_current_user),
+):
+    return list_maintenance_requests(current_user)
 
 
 @router.put("/{request_id}")
 def update_request(
     request_id: int,
     request: MaintenanceRequestUpdate,
+    current_user: dict = Depends(get_current_user),
 ):
-    return update_maintenance_request(request_id, request)
+    return update_maintenance_request(request_id, request, current_user)
 
 
 @router.delete("/{request_id}")
-def delete_request(request_id: int):
-    return delete_maintenance_request(request_id)
+def delete_request(
+    request_id: int,
+    current_user: dict = Depends(get_current_user),
+):
+    return delete_maintenance_request(request_id, current_user)

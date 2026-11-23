@@ -7,6 +7,7 @@ import {
 } from "react";
 
 import type { MaintenanceRequest } from "../types/maintenance";
+import { useAuth } from "../context/AuthContext";
 
 import {
   getMaintenanceRequests,
@@ -39,6 +40,11 @@ const initialFormData: CreateMaintenanceRequest = {
 };
 
 export default function Dashboard() {
+  const { user } = useAuth();
+
+  // Role-based permissions
+  const canCreateRequest = user?.role === "resident";
+
   // Maintenance request state
   const [requests, setRequests] = useState<MaintenanceRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,7 +72,7 @@ export default function Dashboard() {
   const [formData, setFormData] =
     useState<CreateMaintenanceRequest>(initialFormData);
 
-  // Fetch all maintenance requests
+  // Fetch maintenance requests
   useEffect(() => {
     async function fetchRequests() {
       try {
@@ -164,6 +170,9 @@ export default function Dashboard() {
   // Create maintenance request
   async function handleCreateRequest(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (!canCreateRequest) return;
+
     setSubmitting(true);
     setFormError("");
 
@@ -252,6 +261,8 @@ export default function Dashboard() {
     requestId: number,
     newStatus: RequestStatus
   ) {
+    if (user?.role !== "building_manager") return;
+
     setActionError("");
     setOpenMenuId(null);
     setMenuPosition(null);
@@ -280,6 +291,8 @@ export default function Dashboard() {
 
   // Delete maintenance request
   async function handleDeleteRequest(requestId: number) {
+    if (user?.role !== "admin") return;
+
     const confirmed = window.confirm(
       "Are you sure you want to delete this maintenance request?"
     );
@@ -332,16 +345,18 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <button
-            className="primary-button"
-            type="button"
-            onClick={() => {
-              setFormError("");
-              setShowForm(true);
-            }}
-          >
-            New Request
-          </button>
+          {canCreateRequest && (
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => {
+                setFormError("");
+                setShowForm(true);
+              }}
+            >
+              New Request
+            </button>
+          )}
         </div>
 
         {/* Statistics */}
@@ -353,16 +368,18 @@ export default function Dashboard() {
         />
 
         {/* New Request Modal */}
-        <RequestFormModal
-          showForm={showForm}
-          submitting={submitting}
-          formError={formError}
-          formData={formData}
-          setFormData={setFormData}
-          onSubmit={handleCreateRequest}
-          onClose={closeForm}
-          onReset={resetForm}
-        />
+        {canCreateRequest && (
+          <RequestFormModal
+            showForm={showForm}
+            submitting={submitting}
+            formError={formError}
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={handleCreateRequest}
+            onClose={closeForm}
+            onReset={resetForm}
+          />
+        )}
 
         {/* Request Details Modal */}
         <RequestDetailsModal

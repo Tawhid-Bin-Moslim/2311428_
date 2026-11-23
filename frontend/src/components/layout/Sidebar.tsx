@@ -6,8 +6,36 @@ import {
   Settings,
   User,
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
+
+import { useAuth } from "../../context/AuthContext";
+import type { UserRole } from "../../types/auth";
+
+const roleLabels: Record<UserRole, string> = {
+  admin: "Administrator",
+  building_manager: "Building Manager",
+  resident: "Resident",
+};
 
 export default function Sidebar() {
+  const { user, logout } = useAuth();
+
+  if (!user) {
+    return null;
+  }
+
+  const navigationItems = [
+
+    {
+      label: "Maintenance",
+      path: "/",
+      icon: ClipboardList,
+      roles: ["admin", "building_manager", "resident"],
+    },
+  ].filter((item) =>
+    item.roles.includes(user.role)
+  );
+
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -20,38 +48,45 @@ export default function Sidebar() {
       <p className="nav-label">MENU</p>
 
       <nav className="navigation">
-        <a className="nav-item" href="#">
-          <LayoutDashboard size={19} />
-          Dashboard
-        </a>
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
 
-        <a className="nav-item active" href="#">
-          <ClipboardList size={19} />
-          Maintenance
-        </a>
-
-        <a className="nav-item" href="#">
-          <Building2 size={19} />
-          Residents
-        </a>
+          return (
+            <NavLink
+              key={item.label}
+              to={item.path}
+              end
+              className={({ isActive }) =>
+                `nav-item ${isActive ? "active" : ""}`
+              }
+            >
+              <Icon size={19} />
+              {item.label}
+            </NavLink>
+          );
+        })}
       </nav>
 
       <div className="sidebar-bottom">
-        <a className="nav-item" href="#">
-          <Settings size={19} />
-          Settings
-        </a>
-
         <div className="profile">
           <div className="profile-avatar">
             <User size={20} />
           </div>
 
           <div>
-            <strong>Building Manager</strong>
-            <small>Administrator</small>
+            <strong>{user.full_name}</strong>
+            <small>{roleLabels[user.role]}</small>
           </div>
         </div>
+
+        <button
+          type="button"
+          className="nav-item"
+          onClick={logout}
+        >
+          <Settings size={19} />
+          Logout
+        </button>
       </div>
     </aside>
   );

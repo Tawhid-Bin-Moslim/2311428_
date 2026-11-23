@@ -2,6 +2,7 @@
 import { createPortal } from "react-dom";
 import type { RefObject } from "react";
 import type { MaintenanceRequest } from "../../types/maintenance";
+import { useAuth } from "../../context/AuthContext";
 
 type RequestStatus = MaintenanceRequest["status"];
 
@@ -32,7 +33,9 @@ export default function RequestActionMenu({
   onStatusChange,
   onDelete,
 }: RequestActionMenuProps) {
-  if (openMenuId === null || !menuPosition) {
+  const { user } = useAuth();
+
+  if (openMenuId === null || !menuPosition || !user) {
     return null;
   }
 
@@ -41,6 +44,9 @@ export default function RequestActionMenu({
   );
 
   if (!request) return null;
+
+  const canUpdateStatus = user.role === "building_manager";
+  const canDelete = user.role === "admin";
 
   return createPortal(
     <div
@@ -59,37 +65,43 @@ export default function RequestActionMenu({
         View Details
       </button>
 
-      <div className="action-menu-divider" />
+      {canUpdateStatus && (
+        <>
+          <div className="action-menu-divider" />
 
-      <p>Change Status</p>
+          <p>Change Status</p>
 
-      {(
-        ["pending", "in_progress", "completed"] as RequestStatus[]
-      ).map((status) => (
-        <button
-          key={status}
-          type="button"
-          disabled={request.status === status}
-          onClick={() =>
-            onStatusChange(request.id, status)
-          }
-        >
-          {status === "in_progress"
-            ? "In Progress"
-            : status.charAt(0).toUpperCase() + status.slice(1)}
-          {request.status === status && " ✓"}
-        </button>
-      ))}
+          {(
+            ["pending", "in_progress", "completed"] as RequestStatus[]
+          ).map((status) => (
+            <button
+              key={status}
+              type="button"
+              disabled={request.status === status}
+              onClick={() => onStatusChange(request.id, status)}
+            >
+              {status === "in_progress"
+                ? "In Progress"
+                : status.charAt(0).toUpperCase() + status.slice(1)}
+              {request.status === status && " ✓"}
+            </button>
+          ))}
+        </>
+      )}
 
-      <div className="action-menu-divider" />
+      {canDelete && (
+        <>
+          <div className="action-menu-divider" />
 
-      <button
-        type="button"
-        className="delete-action"
-        onClick={() => onDelete(openMenuId)}
-      >
-        Delete Request
-      </button>
+          <button
+            type="button"
+            className="delete-action"
+            onClick={() => onDelete(openMenuId)}
+          >
+            Delete Request
+          </button>
+        </>
+      )}
     </div>,
     document.body
   );
