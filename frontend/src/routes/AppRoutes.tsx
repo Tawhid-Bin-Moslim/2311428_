@@ -1,4 +1,3 @@
-
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -7,6 +6,7 @@ import AuthLayout from "../layouts/AuthLayout";
 import LoginPage from "../pages/auth/LoginPage";
 import MaintenancePage from "../pages/MaintenancePage";
 import BuildingsPage from "../pages/BuildingsPage";
+import FlatsPage from "../pages/FlatsPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -23,7 +23,7 @@ export default function AppRoutes() {
         <Route element={<DashboardLayout />}>
           <Route path="/" element={<MaintenancePage />} />
 
-          {/* Only Admin and Building Manager */}
+          {/* Admin and Building Manager only */}
           <Route
             element={
               <ProtectedRoute
@@ -31,13 +31,24 @@ export default function AppRoutes() {
               />
             }
           >
-            <Route path="/buildings" element={<BuildingsPage />} />
+            <Route
+              path="/buildings"
+              element={<BuildingsPage />}
+            />
+
+            <Route
+              path="/flats"
+              element={<FlatsPage />}
+            />
           </Route>
         </Route>
       </Route>
 
       {/* Unknown routes */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route
+        path="*"
+        element={<Navigate to="/login" replace />}
+      />
     </Routes>
   );
 }
