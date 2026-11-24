@@ -4,10 +4,10 @@ import {
   Settings,
   User,
   House,
+  Users,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
-
 import { useAuth } from "../../context/AuthContext";
 import type { UserRole } from "../../types/auth";
 
@@ -20,38 +20,38 @@ const roleLabels: Record<UserRole, string> = {
 export default function Sidebar() {
   const { user, logout } = useAuth();
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   const navigationItems = [
     {
       label: "Maintenance",
       path: "/",
       icon: ClipboardList,
-      roles: [
-        "admin",
-        "building_manager",
-        "resident",
-      ] as UserRole[],
+      roles: ["admin", "building_manager", "resident"] as UserRole[],
     },
     {
       label: "Buildings",
       path: "/buildings",
       icon: Building2,
-      roles: [
-        "admin",
-        "building_manager",
-      ] as UserRole[],
+      roles: ["admin", "building_manager"] as UserRole[],
     },
     {
       label: "Flats",
       path: "/flats",
       icon: House,
-      roles: [
-        "admin",
-        "building_manager",
-      ] as UserRole[],
+      roles: ["admin", "building_manager"] as UserRole[],
+    },
+    {
+      label: "Occupancies",
+      path: "/occupancies",
+      icon: Users,
+      roles: ["admin"] as UserRole[],
+    },
+    {
+      label: "My Flat",
+      path: "/my-flat",
+      icon: House,
+      roles: ["resident"] as UserRole[],
     },
   ].filter((item) => item.roles.includes(user.role));
 
@@ -61,7 +61,6 @@ export default function Sidebar() {
         <div className="brand-icon">
           <Building2 size={24} />
         </div>
-
         <span>ApartmentCare</span>
       </div>
 

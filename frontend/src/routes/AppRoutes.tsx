@@ -7,48 +7,45 @@ import LoginPage from "../pages/auth/LoginPage";
 import MaintenancePage from "../pages/MaintenancePage";
 import BuildingsPage from "../pages/BuildingsPage";
 import FlatsPage from "../pages/FlatsPage";
+import OccupanciesPage from "../pages/OccupanciesPage";
+import MyFlatPage from "../pages/MyFlatPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Authentication routes */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
       </Route>
 
-      {/* Protected dashboard routes */}
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/" element={<MaintenancePage />} />
 
-          {/* Admin and Building Manager only */}
           <Route
             element={
-              <ProtectedRoute
-                allowedRoles={["admin", "building_manager"]}
-              />
+              <ProtectedRoute allowedRoles={["admin", "building_manager"]} />
             }
           >
-            <Route
-              path="/buildings"
-              element={<BuildingsPage />}
-            />
+            <Route path="/buildings" element={<BuildingsPage />} />
+            <Route path="/flats" element={<FlatsPage />} />
+          </Route>
 
+          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
             <Route
-              path="/flats"
-              element={<FlatsPage />}
+              path="/occupancies"
+              element={<OccupanciesPage />}
             />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={["resident"]} />}>
+            <Route path="/my-flat" element={<MyFlatPage />} />
           </Route>
         </Route>
       </Route>
 
-      {/* Unknown routes */}
-      <Route
-        path="*"
-        element={<Navigate to="/login" replace />}
-      />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
