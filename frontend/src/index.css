@@ -752,3 +752,9 @@ td svg {
     grid-template-columns: 1fr;
   }
 }
+.building-message {
+  padding: 30px;
+  text-align: center;
+  color: #64748b;
+  font-size: 13px;
+}

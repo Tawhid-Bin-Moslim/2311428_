@@ -1,6 +1,5 @@
 
 import {
-  LayoutDashboard,
   ClipboardList,
   Building2,
   Settings,
@@ -25,16 +24,19 @@ export default function Sidebar() {
   }
 
   const navigationItems = [
-
     {
       label: "Maintenance",
       path: "/",
       icon: ClipboardList,
-      roles: ["admin", "building_manager", "resident"],
+      roles: ["admin", "building_manager", "resident"] as UserRole[],
     },
-  ].filter((item) =>
-    item.roles.includes(user.role)
-  );
+    {
+      label: "Buildings",
+      path: "/buildings",
+      icon: Building2,
+      roles: ["admin", "building_manager"] as UserRole[],
+    },
+  ].filter((item) => item.roles.includes(user.role));
 
   return (
     <aside className="sidebar">
