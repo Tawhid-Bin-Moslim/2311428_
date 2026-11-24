@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers.users import router as users_router
 from routers.maintenance import router as maintenance_router
 from routers.auth import router as auth_router
-
+from routers.buildings import router as buildings_router
 app = FastAPI(
     title="Apartment Management System",
     description="ApartmentCare Maintenance Management API",
@@ -36,3 +36,4 @@ def health() -> dict[str, str]:
 app.include_router(maintenance_router)
 app.include_router(auth_router)
 app.include_router(users_router)
+app.include_router(buildings_router)

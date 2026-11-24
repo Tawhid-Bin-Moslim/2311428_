@@ -1,11 +1,18 @@
-
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
 
-// Keep the access token in memory.
-let accessToken: string | null = null;
+const TOKEN_KEY = "apartmentcare_access_token";
+
+// Restore the token after a page reload in the same tab.
+let accessToken: string | null = sessionStorage.getItem(TOKEN_KEY);
 
 export function setAccessToken(token: string | null) {
   accessToken = token;
+
+  if (token) {
+    sessionStorage.setItem(TOKEN_KEY, token);
+  } else {
+    sessionStorage.removeItem(TOKEN_KEY);
+  }
 }
 
 // Shared function for communicating with the FastAPI backend.
