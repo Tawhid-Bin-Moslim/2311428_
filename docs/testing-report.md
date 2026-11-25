@@ -50,12 +50,12 @@ Resident maintenance-request ownership was not independently verified. The respo
 
 ## 6. Remaining Verification
 
-- [ ] Verify Resident maintenance-request ownership and flat-level data isolation.
-- [ ] Complete Building Manager maintenance-request access and status-update verification.
-- [ ] Verify Admin maintenance-request access.
-- [ ] Complete frontend integration testing for all three roles.
-- [ ] Verify production environment configuration.
-- [ ] Complete live application testing.
+-  Verify Resident maintenance-request ownership and flat-level data isolation.
+-  Complete Building Manager maintenance-request access and status-update verification.
+-  Verify Admin maintenance-request access.
+-  Complete frontend integration testing for all three roles.
+-  Verify production environment configuration.
+-  Complete live application testing.
 
 ## 7. Conclusion
 
