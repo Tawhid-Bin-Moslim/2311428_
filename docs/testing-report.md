@@ -1,6 +1,6 @@
-﻿# ApartmentCare â€” Testing Report
+﻿# ApartmentCare - Testing Report
 
-**GitHub Issue:** #30 â€” Final Testing & Deployment
+**GitHub Issue:** #30 - Final Testing & Deployment
 **Branch:** `feature/30-final-testing-deployment`
 **Testing Date:** 26 November 2026
 
@@ -62,3 +62,4 @@ Resident maintenance-request ownership was not independently verified. The respo
 The Render backend deployment, Supabase database connectivity, initial authentication, and tested building-level RBAC permissions are working successfully.
 
 Additional maintenance authorization, frontend integration, and production verification are still required before declaring final testing and deployment complete.
+
