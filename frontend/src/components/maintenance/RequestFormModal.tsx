@@ -1,5 +1,6 @@
 
 import type { FormEvent } from "react";
+import { X, ClipboardList, MapPin, FileText, AlertCircle } from "lucide-react";
 import type { CreateMaintenanceRequest } from "../../services/maintenanceService";
 
 interface RequestFormModalProps {
@@ -40,39 +41,43 @@ export default function RequestFormModal({
       }}
     >
       <div
-        className="modal"
+        className="modal request-form-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="request-modal-title"
       >
-        <div className="modal-header">
-          <div>
-            <h2 id="request-modal-title">
-              New Maintenance Request
-            </h2>
-            <p>
-              Enter the details of the maintenance issue.
-            </p>
+        <div className="modal-header request-form-header">
+          <div className="request-form-heading">
+            <div className="request-form-icon">
+              <ClipboardList size={21} />
+            </div>
+
+            <div>
+              <h2 id="request-modal-title">New Maintenance Request</h2>
+              <p>Provide the details so your maintenance issue can be addressed.</p>
+            </div>
           </div>
 
           <button
-            className="icon-button"
+            className="icon-button request-form-close"
             type="button"
             disabled={submitting}
             onClick={closeForm}
             aria-label="Close form"
           >
-            ×
+            <X size={19} />
           </button>
         </div>
 
-        <form onSubmit={onSubmit}>
+        <form className="request-form" onSubmit={onSubmit}>
           <div className="form-group">
-            <label htmlFor="request-title">Request Title</label>
+            <label htmlFor="request-title">
+              Request Title <span className="required-mark">*</span>
+            </label>
             <input
               id="request-title"
               type="text"
-              placeholder="e.g. Water leakage"
+              placeholder="e.g. Water leakage in bathroom"
               value={formData.title}
               onChange={(e) =>
                 setFormData({
@@ -88,11 +93,11 @@ export default function RequestFormModal({
 
           <div className="form-group">
             <label htmlFor="request-description">
-              Description
+              Description <span className="required-mark">*</span>
             </label>
             <textarea
               id="request-description"
-              placeholder="Describe the maintenance issue..."
+              placeholder="Describe the issue and mention any important details..."
               value={formData.description}
               onChange={(e) =>
                 setFormData({
@@ -103,25 +108,33 @@ export default function RequestFormModal({
               minLength={5}
               required
             />
+            <span className="field-hint">
+              Include details that will help the maintenance team understand the issue.
+            </span>
           </div>
 
           <div className="form-group">
-            <label htmlFor="request-location">Location</label>
-            <input
-              id="request-location"
-              type="text"
-              placeholder="e.g. Flat 4B"
-              value={formData.location}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  location: e.target.value,
-                })
-              }
-              minLength={2}
-              maxLength={150}
-              required
-            />
+            <label htmlFor="request-location">
+              Location <span className="required-mark">*</span>
+            </label>
+            <div className="request-input-icon">
+              <MapPin size={17} />
+              <input
+                id="request-location"
+                type="text"
+                placeholder="e.g. Flat 4B, Kitchen"
+                value={formData.location}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    location: e.target.value,
+                  })
+                }
+                minLength={2}
+                maxLength={150}
+                required
+              />
+            </div>
           </div>
 
           <div className="form-group">
@@ -148,7 +161,7 @@ export default function RequestFormModal({
             </p>
           )}
 
-          <div className="modal-actions">
+          <div className="modal-actions request-form-actions">
             <button
               type="button"
               className="cancel-button"

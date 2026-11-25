@@ -9,7 +9,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 
-import Navbar from "../components/layout/Navbar";
+
 import { useAuth } from "../context/AuthContext";
 
 import { getBuildings } from "../services/buildingService";
@@ -271,7 +271,6 @@ export default function AnnouncementsPage() {
 
   return (
     <>
-      <Navbar />
 
       <section className="content announcements-page">
         <div className="page-heading">
