@@ -1,23 +1,26 @@
 
-import { Bell, User } from "lucide-react";
+import { useLocation } from "react-router-dom";
+
+const pageTitles: Record<string, string> = {
+  "/": "Maintenance",
+  "/announcements": "Announcements",
+  "/buildings": "Buildings",
+  "/flats": "Flats",
+  "/occupancies": "Occupancies",
+  "/my-flat": "My Flat",
+};
 
 export default function Navbar() {
+  const { pathname } = useLocation();
+
+  const pageTitle = pageTitles[pathname] ?? "ApartmentCare";
+
   return (
     <header className="topbar">
       <div className="breadcrumb">
         <span>ApartmentCare</span>
-        <span>/</span>
-        <strong>Maintenance</strong>
-      </div>
-
-      <div className="topbar-actions">
-        <button className="icon-button" type="button">
-          <Bell size={19} />
-        </button>
-
-        <div className="header-avatar">
-          <User size={19} />
-        </div>
+        <span aria-hidden="true">/</span>
+        <strong>{pageTitle}</strong>
       </div>
     </header>
   );

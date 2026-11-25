@@ -18,7 +18,6 @@ import {
   type CreateMaintenanceRequest,
 } from "../services/maintenanceService";
 
-import Navbar from "../components/layout/Navbar";
 import MaintenanceStats from "../components/maintenance/MaintenanceStats";
 import MaintenanceTable from "../components/maintenance/MaintenanceTable";
 import RequestFormModal from "../components/maintenance/RequestFormModal";
@@ -333,7 +332,6 @@ export default function Dashboard() {
 
   return (
     <>
-      <Navbar />
 
       <section className="content">
         {/* Page Heading */}

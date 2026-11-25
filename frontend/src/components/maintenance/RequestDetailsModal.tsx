@@ -1,4 +1,5 @@
 
+import { X, ClipboardList, MapPin, CalendarDays, Hash } from "lucide-react";
 import type { MaintenanceRequest } from "../../types/maintenance";
 
 interface RequestDetailsModalProps {
@@ -18,6 +19,14 @@ export default function RequestDetailsModal({
     return null;
   }
 
+  const priority = selectedRequest?.priority;
+  const status = selectedRequest?.status;
+
+  const formatStatus = (value: string) =>
+    value === "in_progress"
+      ? "In Progress"
+      : value.charAt(0).toUpperCase() + value.slice(1);
+
   return (
     <div
       className="modal-overlay"
@@ -28,17 +37,21 @@ export default function RequestDetailsModal({
       }}
     >
       <div
-        className="modal"
+        className="modal request-details-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="details-modal-title"
       >
-        <div className="modal-header">
-          <div>
-            <h2 id="details-modal-title">Request Details</h2>
-            <p>
-              Complete maintenance request information.
-            </p>
+        <div className="modal-header details-modal-header">
+          <div className="details-modal-heading">
+            <div className="details-modal-icon">
+              <ClipboardList size={21} />
+            </div>
+
+            <div>
+              <h2 id="details-modal-title">Request Details</h2>
+              <p>Maintenance request information</p>
+            </div>
           </div>
 
           <button
@@ -48,70 +61,83 @@ export default function RequestDetailsModal({
             onClick={onClose}
             aria-label="Close details"
           >
-            ×
+            <X size={19} />
           </button>
         </div>
 
         {detailsLoading ? (
-          <p>Loading request details...</p>
+          <div className="details-loading">
+            <div className="details-spinner" />
+            <p>Loading request details...</p>
+          </div>
         ) : detailsError ? (
-          <p className="form-error" role="alert">
-            {detailsError}
-          </p>
+          <div className="details-error">
+            <p className="form-error" role="alert">
+              {detailsError}
+            </p>
+          </div>
         ) : selectedRequest ? (
           <div className="request-details">
-            <div className="form-group">
-              <label>Request ID</label>
-              <p>#{selectedRequest.id}</p>
+            <div className="details-summary">
+              <div>
+                <span className="details-eyebrow">REQUEST TITLE</span>
+                <h3>{selectedRequest.title}</h3>
+              </div>
+
+              <div className="details-request-id">
+                <Hash size={13} />
+                {selectedRequest.id}
+              </div>
             </div>
 
-            <div className="form-group">
-              <label>Title</label>
-              <p>{selectedRequest.title}</p>
+            <div className="details-badges">
+              <span className={`details-priority priority-${priority}`}>
+                {formatStatus(priority ?? "")} Priority
+              </span>
+
+              <span className={`details-status status-${status}`}>
+                {formatStatus(status ?? "")}
+              </span>
             </div>
 
-            <div className="form-group">
-              <label>Description</label>
-              <p>{selectedRequest.description}</p>
-            </div>
-
-            <div className="form-group">
-              <label>Location</label>
-              <p>{selectedRequest.location}</p>
-            </div>
-
-            <div className="form-group">
-              <label>Priority</label>
-              <p>
-                {selectedRequest.priority.charAt(0).toUpperCase() +
-                  selectedRequest.priority.slice(1)}
+            <div className="details-section">
+              <h4>Description</h4>
+              <p className="details-description">
+                {selectedRequest.description}
               </p>
             </div>
 
-            <div className="form-group">
-              <label>Status</label>
-              <p>
-                {selectedRequest.status === "in_progress"
-                  ? "In Progress"
-                  : selectedRequest.status.charAt(0).toUpperCase() +
-                    selectedRequest.status.slice(1)}
-              </p>
-            </div>
+            <div className="details-info-grid">
+              <div className="details-info-item">
+                <span className="details-info-icon">
+                  <MapPin size={17} />
+                </span>
+                <div>
+                  <label>Location</label>
+                  <p>{selectedRequest.location}</p>
+                </div>
+              </div>
 
-            <div className="form-group">
-              <label>Created At</label>
-              <p>
-                {selectedRequest.created_at
-                  ? new Date(
-                      selectedRequest.created_at
-                    ).toLocaleString()
-                  : "N/A"}
-              </p>
+              <div className="details-info-item">
+                <span className="details-info-icon">
+                  <CalendarDays size={17} />
+                </span>
+                <div>
+                  <label>Created At</label>
+                  <p>
+                    {selectedRequest.created_at
+                      ? new Date(
+                          selectedRequest.created_at
+                        ).toLocaleString()
+                      : "N/A"}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         ) : null}
 
-        <div className="modal-actions">
+        <div className="modal-actions details-modal-actions">
           <button
             type="button"
             className="cancel-button"

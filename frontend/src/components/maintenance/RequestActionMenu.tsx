@@ -1,6 +1,14 @@
 
 import { createPortal } from "react-dom";
 import type { RefObject } from "react";
+import {
+  Eye,
+  Clock,
+  Wrench,
+  CheckCircle2,
+  Trash2,
+  Check,
+} from "lucide-react";
 import type { MaintenanceRequest } from "../../types/maintenance";
 import { useAuth } from "../../context/AuthContext";
 
@@ -23,6 +31,16 @@ interface RequestActionMenuProps {
   ) => void;
   onDelete: (requestId: number) => void;
 }
+
+const statusOptions: {
+  value: RequestStatus;
+  label: string;
+  icon: typeof Clock;
+}[] = [
+  { value: "pending", label: "Pending", icon: Clock },
+  { value: "in_progress", label: "In Progress", icon: Wrench },
+  { value: "completed", label: "Completed", icon: CheckCircle2 },
+];
 
 export default function RequestActionMenu({
   openMenuId,
@@ -50,8 +68,10 @@ export default function RequestActionMenu({
 
   return createPortal(
     <div
-      className="action-menu"
+      className="action-menu polished-action-menu"
       ref={actionMenuRef}
+      role="menu"
+      aria-label="Maintenance request actions"
       style={{
         position: "fixed",
         top: menuPosition.top,
@@ -60,32 +80,40 @@ export default function RequestActionMenu({
     >
       <button
         type="button"
+        role="menuitem"
+        className="action-menu-item"
         onClick={() => onViewDetails(openMenuId)}
       >
-        View Details
+        <Eye size={16} />
+        <span>View Details</span>
       </button>
 
       {canUpdateStatus && (
         <>
           <div className="action-menu-divider" />
 
-          <p>Change Status</p>
+          <p className="action-menu-heading">CHANGE STATUS</p>
 
-          {(
-            ["pending", "in_progress", "completed"] as RequestStatus[]
-          ).map((status) => (
-            <button
-              key={status}
-              type="button"
-              disabled={request.status === status}
-              onClick={() => onStatusChange(request.id, status)}
-            >
-              {status === "in_progress"
-                ? "In Progress"
-                : status.charAt(0).toUpperCase() + status.slice(1)}
-              {request.status === status && " ✓"}
-            </button>
-          ))}
+          {statusOptions.map(({ value, label, icon: Icon }) => {
+            const isCurrent = request.status === value;
+
+            return (
+              <button
+                key={value}
+                type="button"
+                role="menuitem"
+                className={`action-menu-item status-action ${
+                  isCurrent ? "current-status-action" : ""
+                }`}
+                disabled={isCurrent}
+                onClick={() => onStatusChange(request.id, value)}
+              >
+                <Icon size={16} />
+                <span>{label}</span>
+                {isCurrent && <Check size={15} className="action-check" />}
+              </button>
+            );
+          })}
         </>
       )}
 
@@ -95,10 +123,12 @@ export default function RequestActionMenu({
 
           <button
             type="button"
-            className="delete-action"
+            role="menuitem"
+            className="action-menu-item delete-action"
             onClick={() => onDelete(openMenuId)}
           >
-            Delete Request
+            <Trash2 size={16} />
+            <span>Delete Request</span>
           </button>
         </>
       )}
