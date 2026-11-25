@@ -5,6 +5,7 @@ import AuthLayout from "../layouts/AuthLayout";
 
 import LoginPage from "../pages/auth/LoginPage";
 import MaintenancePage from "../pages/MaintenancePage";
+import AnnouncementsPage from "../pages/AnnouncementsPage";
 import BuildingsPage from "../pages/BuildingsPage";
 import FlatsPage from "../pages/FlatsPage";
 import OccupanciesPage from "../pages/OccupanciesPage";
@@ -24,8 +25,15 @@ export default function AppRoutes() {
           <Route path="/" element={<MaintenancePage />} />
 
           <Route
+            path="/announcements"
+            element={<AnnouncementsPage />}
+          />
+
+          <Route
             element={
-              <ProtectedRoute allowedRoles={["admin", "building_manager"]} />
+              <ProtectedRoute
+                allowedRoles={["admin", "building_manager"]}
+              />
             }
           >
             <Route path="/buildings" element={<BuildingsPage />} />
