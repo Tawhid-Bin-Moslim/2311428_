@@ -10,6 +10,7 @@ from routers.auth import router as auth_router
 from routers.buildings import router as buildings_router
 from routers.flats import router as flats_router
 from routers.occupancies import router as occupancies_router
+from routers.announcements import router as announcements_router
 
 
 app = FastAPI(
@@ -38,9 +39,9 @@ app.include_router(users_router)
 app.include_router(buildings_router)
 app.include_router(flats_router)
 app.include_router(occupancies_router)
+app.include_router(announcements_router)
 
 
-# Health Check
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}

@@ -5,6 +5,7 @@ import {
   User,
   House,
   Users,
+  Megaphone,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -27,6 +28,12 @@ export default function Sidebar() {
       label: "Maintenance",
       path: "/",
       icon: ClipboardList,
+      roles: ["admin", "building_manager", "resident"] as UserRole[],
+    },
+    {
+      label: "Announcements",
+      path: "/announcements",
+      icon: Megaphone,
       roles: ["admin", "building_manager", "resident"] as UserRole[],
     },
     {
