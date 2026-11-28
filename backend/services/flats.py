@@ -84,8 +84,7 @@ def list_flats(current_user, building_id=None):
                     )
 
             elif current_user["role"] == "building_manager":
-                cur.execute(
-                    """
+                manager_query = """
                     SELECT f.id, f.building_id,
                            f.flat_number, f.floor_number
                     FROM flats f
@@ -96,15 +95,16 @@ def list_flats(current_user, building_id=None):
                       AND a.assigned_from <= CURRENT_DATE
                       AND a.assigned_until IS NULL
                       AND b.status = 'active'
-                      AND (%s IS NULL OR f.building_id = %s)
-                    ORDER BY f.floor_number, f.flat_number
-                    """,
-                    (
-                        current_user["id"],
-                        building_id,
-                        building_id,
-                    ),
-                )
+                """
+                manager_params = [current_user["id"]]
+
+                if building_id is not None:
+                    manager_query += " AND f.building_id = %s"
+                    manager_params.append(building_id)
+
+                manager_query += " ORDER BY f.floor_number, f.flat_number"
+
+                cur.execute(manager_query, manager_params)
 
             else:
                 raise HTTPException(

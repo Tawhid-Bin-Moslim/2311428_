@@ -92,3 +92,5 @@ class ManagedUserResponse(BaseModel):
     login_id: str | None = None
     is_active: bool
     is_super_admin: bool
+    assigned_building_id: UUID | None = None
+    assigned_building_name: str | None = None

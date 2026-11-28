@@ -58,12 +58,14 @@ export default function ResidentsPage() {
       setLoading(true);
       setError("");
 
-      const [residentData, flatData, buildingData] =
-        await Promise.all([
-          getResidents(),
-          getFlats(),
-          getBuildings(),
-        ]);
+      const [residentData, flatData] = await Promise.all([
+        getResidents(),
+        getFlats(),
+      ]);
+
+      // Managers receive only flats in their assigned active building
+      // from the backend. Admins can see flats in all active buildings.
+      const buildingData = isAdmin ? await getBuildings() : [];
 
       const activeBuildingIds = new Set(
         buildingData
@@ -71,11 +73,19 @@ export default function ResidentsPage() {
           .map((building) => building.id)
       );
 
+      // A flat with a current Resident occupancy is not available.
+      const occupiedFlatIds = new Set(
+        residentData.map((resident) => resident.flat_id)
+      );
+
       setResidents(residentData);
       setFlats(
-        flatData.filter((flat) =>
-          activeBuildingIds.has(flat.building_id)
-        )
+        flatData.filter((flat) => {
+          const hasBuildingAccess =
+            isManager || activeBuildingIds.has(flat.building_id);
+
+          return hasBuildingAccess && !occupiedFlatIds.has(flat.id);
+        })
       );
     } catch (err) {
       setError(

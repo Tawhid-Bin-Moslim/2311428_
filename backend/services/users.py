@@ -15,21 +15,34 @@ def list_users():
             cur.execute(
                 """
                 SELECT
-                    id,
-                    full_name,
-                    email,
-                    role,
-                    login_id,
-                    is_active,
-                    is_super_admin
-                FROM users
+                    u.id,
+                    u.full_name,
+                    u.email,
+                    u.role,
+                    u.login_id,
+                    u.is_active,
+                    u.is_super_admin,
+                    active_building.id,
+                    active_building.name
+                FROM users u
+                LEFT JOIN LATERAL (
+                    SELECT b.id, b.name
+                    FROM building_manager_assignments a
+                    JOIN buildings b ON b.id = a.building_id
+                    WHERE a.manager_id = u.id
+                      AND u.role = 'building_manager'
+                      AND a.assigned_from <= CURRENT_DATE
+                      AND a.assigned_until IS NULL
+                    ORDER BY a.assigned_from DESC
+                    LIMIT 1
+                ) active_building ON TRUE
                 ORDER BY
-                    CASE role
+                    CASE u.role
                         WHEN 'admin' THEN 1
                         WHEN 'building_manager' THEN 2
                         WHEN 'resident' THEN 3
                     END,
-                    full_name
+                    u.full_name
                 """
             )
 
@@ -44,6 +57,8 @@ def list_users():
             "login_id": row[4],
             "is_active": row[5],
             "is_super_admin": row[6],
+            "assigned_building_id": row[7],
+            "assigned_building_name": row[8],
         }
         for row in rows
     ]

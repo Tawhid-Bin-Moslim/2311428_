@@ -426,6 +426,7 @@ export default function RoleManagementSection() {
                   <th>USER</th>
                   <th>LOGIN ID</th>
                   <th>ROLE</th>
+                  <th>ASSIGNED BUILDING</th>
                   <th>ACCOUNT STATUS</th>
                   <th>ACTION</th>
                 </tr>
@@ -459,6 +460,12 @@ export default function RoleManagementSection() {
                             Super Admin
                           </span>
                         )}
+                      </td>
+
+                      <td>
+                        {account.role === "building_manager"
+                          ? account.assigned_building_name ?? "Not assigned"
+                          : "-"}
                       </td>
 
                       <td>
