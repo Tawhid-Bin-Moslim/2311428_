@@ -41,7 +41,12 @@ def get_current_user(
         with conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT id, full_name, role, is_active
+                SELECT
+                    id,
+                    full_name,
+                    role,
+                    is_active,
+                    is_super_admin
                 FROM users
                 WHERE id = %s
                 """,
@@ -59,6 +64,14 @@ def get_current_user(
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid authentication token.",
+                )
+
+            is_super_admin = bool(user[4])
+
+            if is_super_admin and user[2] != "admin":
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid account privilege configuration.",
                 )
 
             building_id = None
@@ -114,6 +127,7 @@ def get_current_user(
         "id": str(user[0]),
         "full_name": user[1],
         "role": user[2],
+        "is_super_admin": is_super_admin,
         "building_id": building_id,
         "flat_id": flat_id,
     }
@@ -130,3 +144,19 @@ def require_role(*allowed_roles: str):
         return current_user
 
     return role_checker
+
+
+def require_super_admin():
+    def super_admin_checker(current_user=Depends(get_current_user)):
+        if (
+            current_user["role"] != "admin"
+            or not current_user["is_super_admin"]
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Super Admin privileges are required.",
+            )
+
+        return current_user
+
+    return super_admin_checker

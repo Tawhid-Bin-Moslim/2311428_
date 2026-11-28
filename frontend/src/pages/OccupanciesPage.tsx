@@ -31,6 +31,7 @@ import {
 import { getAdminUsers } from "../services/userService";
 import { getFlats } from "../services/flatService";
 import { getBuildings } from "../services/buildingService";
+import RoleManagementSection from "../components/occupancies/RoleManagementSection";
 
 function getToday(): string {
   const today = new Date();
@@ -330,6 +331,8 @@ export default function OccupanciesPage() {
         </div>
       </div>
 
+      <RoleManagementSection />
+
       <div className="table-card occupancy-table-card">
         <div className="table-header">
           <div>
@@ -398,7 +401,7 @@ export default function OccupanciesPage() {
                       </td>
 
                       <td>{occupancy.move_in_date}</td>
-                      <td>{occupancy.move_out_date ?? "—"}</td>
+                      <td>{occupancy.move_out_date ?? "â€”"}</td>
 
                       <td>
                         <span
@@ -436,7 +439,7 @@ export default function OccupanciesPage() {
                             </button>
                           </div>
                         ) : (
-                          <span className="occupancy-no-action">—</span>
+                          <span className="occupancy-no-action">â€”</span>
                         )}
                       </td>
                     </tr>
@@ -613,7 +616,7 @@ export default function OccupanciesPage() {
                 <div>
                   <h2 id="occupancy-edit-title">Edit Occupancy Type</h2>
                   <p>
-                    {editingOccupancy.resident_name} · Flat{" "}
+                    {editingOccupancy.resident_name} Â· Flat{" "}
                     {editingOccupancy.flat_number}
                   </p>
                 </div>

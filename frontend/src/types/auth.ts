@@ -14,10 +14,12 @@ export interface LoginResponse {
   role: UserRole;
   user_id: string;
   full_name: string;
+  is_super_admin: boolean;
 }
 
 export interface AuthUser {
   role: UserRole;
   user_id: string;
   full_name: string;
+  is_super_admin: boolean;
 }

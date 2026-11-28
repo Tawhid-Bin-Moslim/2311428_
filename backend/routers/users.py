@@ -1,20 +1,18 @@
-
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from dependencies import require_role
+from dependencies import require_role, require_super_admin
 from schemas.users import (
+    CreateAdminRequest,
+    ChangeUserRoleRequest,
     PromoteResidentRequest,
     DemoteManagerRequest,
     UserManagementResponse,
     ManagedUserResponse,
 )
-from services.users import (
-    list_users,
-    promote_resident,
-    demote_manager,
-)
+from services.users import list_users
+from services.role_management import change_user_role, create_admin_account
 
 
 router = APIRouter(
@@ -34,6 +32,28 @@ def get_users(
 
 
 @router.post(
+    "",
+    response_model=UserManagementResponse,
+)
+def create_admin_user(
+    request: CreateAdminRequest,
+    current_user: dict = Depends(require_super_admin()),
+):
+    return create_admin_account(request, current_user)
+
+@router.patch(
+    "/{user_id}/role",
+    response_model=UserManagementResponse,
+)
+def update_user_role(
+    user_id: UUID,
+    request: ChangeUserRoleRequest,
+    current_user: dict = Depends(require_role("admin")),
+):
+    return change_user_role(user_id, request, current_user)
+
+
+@router.post(
     "/{user_id}/promote",
     response_model=UserManagementResponse,
 )
@@ -42,11 +62,11 @@ def promote_user(
     request: PromoteResidentRequest,
     current_user: dict = Depends(require_role("admin")),
 ):
-    return promote_resident(
-        user_id,
-        request.building_id,
-        current_user,
+    role_request = ChangeUserRoleRequest(
+        role="building_manager",
+        building_id=request.building_id,
     )
+    return change_user_role(user_id, role_request, current_user)
 
 
 @router.post(
@@ -58,9 +78,9 @@ def demote_user(
     request: DemoteManagerRequest,
     current_user: dict = Depends(require_role("admin")),
 ):
-    return demote_manager(
-        user_id,
-        request.flat_id,
-        request.occupancy_type,
-        current_user,
+    role_request = ChangeUserRoleRequest(
+        role="resident",
+        flat_id=request.flat_id,
+        occupancy_type=request.occupancy_type,
     )
+    return change_user_role(user_id, role_request, current_user)

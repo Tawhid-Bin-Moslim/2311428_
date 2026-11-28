@@ -42,6 +42,12 @@ function getStoredUser(): AuthUser | null {
       return null;
     }
 
+    // Support users stored by an older version of ApartmentCare.
+    if (typeof user.is_super_admin !== "boolean") {
+      user.is_super_admin = false;
+      sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+    }
+
     return user;
   } catch {
     sessionStorage.removeItem(USER_KEY);
@@ -60,6 +66,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       role: response.role,
       user_id: response.user_id,
       full_name: response.full_name,
+      is_super_admin: response.is_super_admin,
     };
 
     sessionStorage.setItem(USER_KEY, JSON.stringify(loggedInUser));
