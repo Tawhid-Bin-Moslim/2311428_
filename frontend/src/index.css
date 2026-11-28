@@ -4309,3 +4309,38 @@ body,
     width: 100%;
   }
 }
+/* Resident Management */
+.resident-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 230px;
+}
+
+.resident-search input {
+  border: none;
+  outline: none;
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+}
+
+.resident-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .resident-search {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .table-header {
+    flex-wrap: wrap;
+  }
+}

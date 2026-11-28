@@ -55,6 +55,12 @@ export default function Sidebar() {
       roles: ["admin", "building_manager"] as UserRole[],
     },
     {
+      label: "Residents",
+      path: "/residents",
+      icon: Users,
+      roles: ["admin", "building_manager"] as UserRole[],
+    },
+    {
       label: "Occupancies",
       path: "/occupancies",
       icon: Users,

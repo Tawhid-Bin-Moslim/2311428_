@@ -7,6 +7,7 @@ import {
   X,
   Clock3,
   Plus,
+  KeyRound,
 } from "lucide-react";
 
 import { useAuth } from "../../context/AuthContext";
@@ -22,6 +23,7 @@ import {
 } from "../../services/userService";
 import { getBuildings } from "../../services/buildingService";
 import { getFlats } from "../../services/flatService";
+import { resetAccountPassword } from "../../services/residentService";
 
 type BuildingOption = Awaited<ReturnType<typeof getBuildings>>[number];
 type FlatOption = Awaited<ReturnType<typeof getFlats>>[number];
@@ -77,6 +79,12 @@ export default function RoleManagementSection() {
   const [creatingAdmin, setCreatingAdmin] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
+  const [resetTarget, setResetTarget] = useState<ManagedUser | null>(null);
+  const [resetPassword, setResetPassword] = useState("");
+  const [confirmResetPassword, setConfirmResetPassword] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [resettingPassword, setResettingPassword] = useState(false);
+
   async function loadData() {
     try {
       setLoading(true);
@@ -120,6 +128,70 @@ export default function RoleManagementSection() {
     loadData();
   }, []);
 
+  function openManagerPasswordReset(target: ManagedUser) {
+    if (
+      currentUser?.role !== "admin" ||
+      target.role !== "building_manager" ||
+      !target.is_active
+    ) {
+      return;
+    }
+
+    setResetTarget(target);
+    setResetPassword("");
+    setConfirmResetPassword("");
+    setResetError("");
+  }
+
+  function closeManagerPasswordReset() {
+    if (resettingPassword) return;
+
+    setResetTarget(null);
+    setResetPassword("");
+    setConfirmResetPassword("");
+    setResetError("");
+  }
+
+  async function handleManagerPasswordReset(
+    e: FormEvent<HTMLFormElement>
+  ) {
+    e.preventDefault();
+
+    if (!resetTarget || currentUser?.role !== "admin") return;
+
+    if (resetPassword.length < 4) {
+      setResetError("Password must contain at least 4 characters.");
+      return;
+    }
+
+    if (resetPassword !== confirmResetPassword) {
+      setResetError("Passwords do not match.");
+      return;
+    }
+
+    setResettingPassword(true);
+    setResetError("");
+
+    try {
+      await resetAccountPassword(resetTarget.id, resetPassword);
+
+      setSuccessMessage(
+        `Password reset successfully for ${resetTarget.full_name}.`
+      );
+
+      setResetTarget(null);
+      setResetPassword("");
+      setConfirmResetPassword("");
+    } catch (err) {
+      setResetError(
+        err instanceof Error
+          ? err.message
+          : "Failed to reset Building Manager password."
+      );
+    } finally {
+      setResettingPassword(false);
+    }
+  }
   function canManageTarget(target: ManagedUser): boolean {
     if (!currentUser) return false;
 
@@ -429,7 +501,21 @@ export default function RoleManagementSection() {
                             Inactive account
                           </span>
                         )}
-                      </td>
+
+                        {currentUser?.role === "admin" &&
+                          account.role === "building_manager" &&
+                          account.is_active && (
+                            <button
+                              type="button"
+                              className="occupancy-edit-button"
+                              onClick={() =>
+                                openManagerPasswordReset(account)
+                              }
+                            >
+                              <KeyRound size={14} />
+                              Reset Password
+                            </button>
+                          )}</td>
                     </tr>
                   );
                 })}
@@ -602,6 +688,120 @@ export default function RoleManagementSection() {
                   {creatingAdmin
                     ? "Creating..."
                     : "Create Administrator"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {resetTarget && (
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              closeManagerPasswordReset();
+            }
+          }}
+        >
+          <div
+            className="modal occupancy-form-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="manager-reset-title"
+          >
+            <div className="modal-header occupancy-modal-header">
+              <div className="occupancy-modal-heading">
+                <span className="occupancy-modal-icon">
+                  <KeyRound size={20} />
+                </span>
+
+                <div>
+                  <h2 id="manager-reset-title">
+                    Reset Manager Password
+                  </h2>
+                  <p>
+                    {resetTarget.full_name} - {resetTarget.email}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="icon-button"
+                onClick={closeManagerPasswordReset}
+                disabled={resettingPassword}
+                aria-label="Close form"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form
+              className="occupancy-form"
+              onSubmit={handleManagerPasswordReset}
+            >
+              <div className="form-group">
+                <label htmlFor="manager-new-password">
+                  New Password
+                </label>
+                <input
+                  id="manager-new-password"
+                  type="password"
+                  required
+                  minLength={4}
+                  maxLength={128}
+                  autoComplete="new-password"
+                  value={resetPassword}
+                  onChange={(e) => setResetPassword(e.target.value)}
+                  disabled={resettingPassword}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="manager-confirm-password">
+                  Confirm New Password
+                </label>
+                <input
+                  id="manager-confirm-password"
+                  type="password"
+                  required
+                  minLength={4}
+                  maxLength={128}
+                  autoComplete="new-password"
+                  value={confirmResetPassword}
+                  onChange={(e) =>
+                    setConfirmResetPassword(e.target.value)
+                  }
+                  disabled={resettingPassword}
+                />
+              </div>
+
+              {resetError && (
+                <p className="form-error">{resetError}</p>
+              )}
+
+              <div className="modal-actions occupancy-form-actions">
+                <button
+                  type="button"
+                  className="cancel-button"
+                  onClick={closeManagerPasswordReset}
+                  disabled={resettingPassword}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="primary-button"
+                  disabled={
+                    resettingPassword ||
+                    resetPassword.length < 4 ||
+                    resetPassword !== confirmResetPassword
+                  }
+                >
+                  {resettingPassword
+                    ? "Resetting..."
+                    : "Reset Password"}
                 </button>
               </div>
             </form>

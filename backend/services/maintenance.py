@@ -59,9 +59,9 @@ def get_maintenance_request(request_id: int, current_user):
                     SELECT id, title, description, location,
                            priority, status, created_at
                     FROM maintenance_requests
-                    WHERE id = %s AND resident_id = %s
+                    WHERE id = %s AND flat_id = %s
                     """,
-                    (request_id, current_user["id"]),
+                    (request_id, current_user["flat_id"]),
                 )
 
             elif current_user["role"] == "building_manager":
@@ -107,10 +107,10 @@ def list_maintenance_requests(current_user):
                     SELECT id, title, description, location,
                            priority, status, created_at
                     FROM maintenance_requests
-                    WHERE resident_id = %s
+                    WHERE flat_id = %s
                     ORDER BY created_at DESC
                     """,
-                    (current_user["id"],),
+                    (current_user["flat_id"],),
                 )
 
             elif current_user["role"] == "building_manager":
