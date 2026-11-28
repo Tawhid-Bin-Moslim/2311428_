@@ -4217,3 +4217,95 @@ body,
     border-radius: 13px;
   }
 }
+/* =================================
+   USER ROLE MANAGEMENT
+================================= */
+
+.role-management-card {
+  margin-bottom: 22px;
+}
+
+.role-management-table {
+  min-width: 900px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.role-badge.role-admin {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.role-badge.role-building_manager {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.role-badge.role-resident {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.super-admin-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 7px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.role-restricted-label {
+  color: #94a3b8;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.role-form-note {
+  margin: 0;
+  padding: 11px 12px;
+  border-radius: 8px;
+  background: #f5f3ff;
+  color: #6d28d9;
+  font-size: 12px;
+}
+/* Create Administrator */
+.role-create-admin-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.role-success-message {
+  margin: 0 20px 15px;
+  padding: 11px 14px;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .role-create-admin-button {
+    width: 100%;
+  }
+}

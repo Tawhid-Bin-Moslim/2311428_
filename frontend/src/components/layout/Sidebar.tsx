@@ -136,7 +136,11 @@ export default function Sidebar() {
 
             <div className="profile-info">
               <strong>{user.full_name}</strong>
-              <small>{roleLabels[user.role]}</small>
+              <small>
+  {user.is_super_admin
+    ? "Super Admin"
+    : roleLabels[user.role]}
+</small>
             </div>
           </div>
 

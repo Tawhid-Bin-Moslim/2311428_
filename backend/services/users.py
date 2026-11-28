@@ -20,7 +20,8 @@ def list_users():
                     email,
                     role,
                     login_id,
-                    is_active
+                    is_active,
+                    is_super_admin
                 FROM users
                 ORDER BY
                     CASE role
@@ -42,6 +43,7 @@ def list_users():
             "role": row[3],
             "login_id": row[4],
             "is_active": row[5],
+            "is_super_admin": row[6],
         }
         for row in rows
     ]
@@ -314,14 +316,14 @@ def demote_manager(
             # Verify that the selected flat belongs to
             # the Manager's currently assigned building.
             cur.execute(
-               """
+                """
                 SELECT id
                 FROM flats
                 WHERE id = %s
-                AND building_id = %s
+                  AND building_id = %s
                 FOR UPDATE
-            """,
-            (str(flat_id), str(assigned_building_id)),
+                """,
+                (str(flat_id), str(assigned_building_id)),
             )
 
             if cur.fetchone() is None:

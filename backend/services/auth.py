@@ -55,7 +55,8 @@ def authenticate_user(request):
                         email,
                         password_hash,
                         role,
-                        is_active
+                        is_active,
+                        is_super_admin
                     FROM users
                     WHERE login_id = %s
                       AND LOWER(email) = %s
@@ -81,6 +82,7 @@ def authenticate_user(request):
                 user_uuid = str(user[0])
                 authenticated_user_id = user[1]
                 full_name = user[2]
+                is_super_admin = bool(user[7])
                 building_id = None
 
                 # A manager must have exactly one active
@@ -132,7 +134,8 @@ def authenticate_user(request):
                         u.email,
                         u.password_hash,
                         u.is_active,
-                        f.building_id
+                        f.building_id,
+                        u.is_super_admin
                     FROM users u
                     JOIN occupancies o
                         ON o.resident_id = u.id
@@ -176,6 +179,7 @@ def authenticate_user(request):
                 user_uuid = str(user[0])
                 authenticated_user_id = user[1]
                 full_name = user[2]
+                is_super_admin = bool(user[7])
                 building_id = str(user[6])
 
     # CREATE JWT ACCESS TOKEN
@@ -197,4 +201,5 @@ def authenticate_user(request):
         "role": role,
         "user_id": authenticated_user_id,
         "full_name": full_name,
+        "is_super_admin": is_super_admin,
     }
