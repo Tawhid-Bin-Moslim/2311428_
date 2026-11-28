@@ -11,6 +11,7 @@ from routers.buildings import router as buildings_router
 from routers.flats import router as flats_router
 from routers.occupancies import router as occupancies_router
 from routers.announcements import router as announcements_router
+from routers.residents import router as residents_router
 
 
 app = FastAPI(
@@ -40,6 +41,7 @@ app.include_router(buildings_router)
 app.include_router(flats_router)
 app.include_router(occupancies_router)
 app.include_router(announcements_router)
+app.include_router(residents_router)
 
 
 @app.get("/api/health")

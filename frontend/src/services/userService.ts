@@ -10,6 +10,8 @@ export interface ManagedUser {
   login_id: string | null;
   is_active: boolean;
   is_super_admin: boolean;
+  assigned_building_id?: string | null;
+  assigned_building_name?: string | null;
 }
 
 export interface ChangeUserRoleRequest {

@@ -10,6 +10,7 @@ import BuildingsPage from "../pages/BuildingsPage";
 import FlatsPage from "../pages/FlatsPage";
 import OccupanciesPage from "../pages/OccupanciesPage";
 import MyFlatPage from "../pages/MyFlatPage";
+import ResidentsPage from "../pages/ResidentsPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -45,6 +46,10 @@ export default function AppRoutes() {
               path="/occupancies"
               element={<OccupanciesPage />}
             />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={["admin", "building_manager"]} />}>
+            <Route path="/residents" element={<ResidentsPage />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["resident"]} />}>

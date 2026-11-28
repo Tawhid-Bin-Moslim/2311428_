@@ -10,14 +10,22 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(PROJECT_ROOT / ".env")
 #pass hashing
 password_hash = PasswordHash.recommended()
+
+# Minimum length for newly created or changed passwords.
+MIN_PASSWORD_LENGTH = 4
+
+
+def validate_new_password(password: str) -> None:
+    """Require at least four characters for a new password."""
+    if not isinstance(password, str) or len(password) < MIN_PASSWORD_LENGTH:
+        raise ValueError(
+            f"Password must contain at least {MIN_PASSWORD_LENGTH} characters."
+        )
+
+
 def hash_password(password: str) -> str:
-    """
-    Hashes a password using the recommended hashing algorithm.
-    Args:
-        password (str): The plaintext password to be hashed.
-    Returns:
-        str: The hashed password.
-    """
+    """Validate and securely hash a newly created or changed password."""
+    validate_new_password(password)
     return password_hash.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
